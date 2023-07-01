@@ -53,7 +53,7 @@ rm -f index.html (인덱스 파일 삭제)
 
 jekyll new ./
 
-!오류 jekyll 4.3.2 | Error:  Operation not permitted
+!오류 jekyll 4.3.2 / Error:  Operation not permitted
 
 하라는대로 했는데 오류가 난다.
 
