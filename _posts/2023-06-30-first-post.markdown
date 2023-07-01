@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "How to make my Page"
+excerpt: "Jekyll를 이용한 GitHub Pages 만들기"
 date:   2023-06-30 22:03:36 +0530
 categories: Jekyll
 ---
@@ -31,7 +32,6 @@ git push -u origin main
 
 이제 문제는 jekyll 설치!
 
-~~나머지는 알바 다녀와서 쓰도록 하겠다 ^^~~
 
 ***
 
@@ -41,7 +41,6 @@ git push -u origin main
 
 jekyll 설치가 되고 bundle exec jekyll serve 을 통해 http://127.0.0.1:4000/ 에 접속하여 나의 페이지가 생성된 것은 확인하였으나, GitHub에 올려도 그 페이지를 확인하긴 어려웠다.
 
-~~다음날 맑은 정신으로 다시 시도하기로 하고 종료~~
 
 ***
 
@@ -53,7 +52,7 @@ rm -f index.html (인덱스 파일 삭제)
 
 jekyll new ./
 
-!오류 jekyll 4.3.2 / Error:  Operation not permitted
+⚠️ jekyll 4.3.2 / Error:  Operation not permitted
 
 하라는대로 했는데 오류가 난다.
 
@@ -73,7 +72,7 @@ gem install jekyll  <- github.io 안에 설치해야하는 것인가? 나도 모
 
 jekyll new ./
 
-!conflict 오류
+⚠️ conflict 오류
 
 jekyll new ./ -f <- 강제로 하겠다는 뜻인가?
 
@@ -87,7 +86,6 @@ bundle exec jekyll serve
 
 하지만 지금은 빈 페이지이다.
 
-~~그렇다면 꾸며야겠지 ? ( ͡° ͜ʖ ͡°)~~
 
 ***
 
@@ -108,9 +106,7 @@ _posts 폴더안에 markdown 문법으로 md파일을 생성하면 글을 올릴
 나는 md파일을 작성하여 git에 올려도 아무런 변화가 없었다. 
 *whyrano* ｡ﾟ(ﾟ´Д｀ﾟ)ﾟ｡
 
-그치만 몇번의 노력끝에 나 이현지 성공했다.
 
-그러니 이렇게 글을 쓰고 있단 말씀 ! ʅ（◞‿◟）ʃ
 
 하나하나 구글링해서 해보라는 대로 수정해가며 
 
