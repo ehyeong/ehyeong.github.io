@@ -7,6 +7,10 @@ categories: jekyll
 
 *GitHub Pages를 이용하여 개발 블로그 만들기 성공!*
 
+***How to Make My Page***
+
+페이지 만드는 과정 정리 (많이 생략되어있을 수 있음)
+
 저장할 폴더를 생성하여 그곳에 나의 repository를 clone해온다.
 
 repository 만드는 법은 구글링하면 쉽게 생성할 수 있으므로 생략
@@ -87,7 +91,9 @@ bundle exec jekyll serve
 
 ***
 
-나는 이 [테마](github.com/thelehhman/plainwhite-jekyll, "github link")를 사용하였다.
+나는 다음 링크에서 테마를 다운받아 사용하였다.
+
+github.com/thelehhman/plainwhite-jekyll
 
 다운받아서 나의 github.io 폴더에 옮기고 실행시켰더니 테마가 적용되었다.
 
@@ -108,11 +114,7 @@ _posts 폴더안에 markdown 문법으로 md파일을 생성하면 글을 올릴
 
 하나하나 구글링해서 해보라는 대로 수정해가며 
 
-commit -m "post first try"
-
-commit -m "post second try"
-
-commit -m "post third try"
+commit -m "post first try" "second try" "third try"
 
 ...
 
@@ -125,11 +127,11 @@ commit -m "post third try"
 ***
 참고 링크
 
-[마크다운 문법](https://gist.github.com/ihoneymon/652be052a0727ad59601, "github link")
+https://gist.github.com/ihoneymon/652be052a0727ad59601
 
-[블로그 생성1](https://zeddios.tistory.com/1222, "blog link")
+https://zeddios.tistory.com/1222
 
-[블로그 생성2](https://supermemi.tistory.com/entry/%EB%82%98%EB%A7%8C%EC%9D%98-%EB%B8%94%EB%A1%9C%EA%B7%B8-%EB%A7%8C%EB%93%A4%EA%B8%B0-Git-hub-blog-GitHubio, "blog link")
+https://supermemi.tistory.com/entry/%EB%82%98%EB%A7%8C%EC%9D%98-%EB%B8%94%EB%A1%9C%EA%B7%B8-%EB%A7%8C%EB%93%A4%EA%B8%B0-Git-hub-blog-GitHubio
 
 ***
 
