@@ -1,11 +1,12 @@
 ---
 layout: post
 title:  "Spring Boot Inflearn 02"
+excerpt: "회원 관리 예제"
 date:   2023-06-30 23:04:36 +0530
 categories: SpringBoot
 ---
 
-## 회원 관리 예제
+### 회원 관리 예제
 
 ### 비지니스 요구사항
 

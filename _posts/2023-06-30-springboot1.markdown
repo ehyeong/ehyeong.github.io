@@ -1,12 +1,12 @@
 ---
 layout: post
 title:  "Spring Boot Inflearn 01"
+excerpt: "스프링 웹 개발 기초"
 date:   2023-06-30 23:03:36 +0530
 categories: SpringBoot
 ---
 
-
-## 스프링 웹 개발 기초
+### 스프링 웹 개발 기초
 
 ### 정적 컨텐츠
 
