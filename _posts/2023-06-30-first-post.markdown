@@ -2,7 +2,7 @@
 layout: post
 title:  "How to make my Page"
 date:   2023-06-30 22:03:36 +0530
-categories: jekyll
+categories: Jekyll
 ---
 
 *GitHub Pages를 이용하여 개발 블로그 만들기 성공!*
