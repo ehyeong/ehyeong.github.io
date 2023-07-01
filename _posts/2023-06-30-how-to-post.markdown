@@ -1,7 +1,9 @@
 ---
 layout: post
-title:  "How to Post"
+title:  "Welcome to Hyunji's Page"
 date:   2023-06-30 21:03:36 +0530
-categories: Javascript NodeJS
+categories: Blog
 ---
-글 어떻게 쓰는거야 ...
+#Welcome to Hyunji's Page
+
+Blog with GitHub Page Start!
