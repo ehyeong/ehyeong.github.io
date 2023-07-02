@@ -229,11 +229,11 @@ members - memberList.html 파일 생성
 
 📌 확인
 
-![home](image-1.png)
+![home](./image-1.png)
 
-![회원 가입](image.png)
+![회원 가입](./image.png)
 
-![회원 목록](image-2.png)
+![회원 목록](./image-2.png)
 
 **원리**
 
