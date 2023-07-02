@@ -54,7 +54,7 @@ public class MemoryMemberRepository implements MemberRepository {}
 MemberService 에 @Service, @Autowired 지우기
 MemoryMemberRepository 에 @Repository 지우기
 
-실행 -> 오류
+실행 -> ⚠️ 오류
 
 SpringConfig Class생성
 
@@ -87,6 +87,7 @@ DI
 - setter 주입
 - 생성자 주입 (권장: 의존관계가 실행중 동적으로 변하는 경우는 거의 없기 때문)
 
+📎 
 실무에선 주로 **정형화된** 컨트롤러, 서비스, 리포지토리 같은 코드는 **컴포넌트 스캔** 사용
 
 **정형화 되지 않은, 상황에 따라 구현 클래스를 변경**해야 하면 설정을 통해 **스프링 빈**으로 등록

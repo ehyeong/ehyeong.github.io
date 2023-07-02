@@ -116,6 +116,7 @@ public class MemberForm {
     }
 }
 ```
+참고)
 ```
 📎 getter setter 단축키 : command + n 
 ```
@@ -179,6 +180,8 @@ MemberController 클래스
         return  "members/memberList";
     }
 ```
+  
+
 🧑🏻‍🏫: addAttribute 기억나죠?
 
 아니요
@@ -191,6 +194,8 @@ MemberController 클래스
 - Spring에서 Controller의 메서드를 작성할 때는 특별하게 Model이라는 타입을 파라미터로 지정
 - Model 객체는 JSP에 컨트롤러에서 생성된 데이터를 담아서 전달하는 역할을 하는 존재
 
+
+  
 
 members - memberList.html 파일 생성
 
@@ -224,6 +229,12 @@ members - memberList.html 파일 생성
 
 📌 확인
 
+![home](image-1.png)
+
+![회원 가입](image.png)
+
+![회원 목록](image-2.png)
+
 **원리**
 
 members는 모델 안에 있는 값을 꺼내는 것
@@ -237,4 +248,4 @@ members는 모델 안에 있는 값을 꺼내는 것
 getId getName에 접근
 
 실행을 중지시키고 다시 시작하면 데이터가 모두 사라짐!
--> 다음 강의
+-> 다음 강의에서 계속
