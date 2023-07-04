@@ -287,15 +287,17 @@ return new JdbcMemberRepository(dataSource);
 
 회원 목록 -> 에러
 
+(이유를 모르겠어서 많은 시간 투자 ...)
+스프링부트 2.4 이후로 추가 필수
 application.properties 
 ```java
 spring.datasource.username=sa 
 ```    
 추가 -> 해결!
 
-📌 확인
+스프링부트 2.4 이후로 추가 필수 (버전간의 문제였음)
 
-스프링부트 2.4 이후로 추가 필수
+📌 확인
 
 원래는 (기존)
 
@@ -306,12 +308,14 @@ MemberRepository는 MemoryMemberRepository와 JdbcMemberRepository가 있음
 스프링 컨테이너에서는
 memory를 지우고 jdbc 로 연결을 바꿈
 
+```
 -> **개방폐쇄 원칙** (OCP, Open-Closed Principle)
-- 확장에는 열려있고, 수정.변경에는 닫혀있음
+    확장에는 열려있고, 수정.변경에는 닫혀있음
 
 -> 스프링의 DI(Dependencies Injection)을 사용하면 기존 코드를 손대지 않고, 설정만으로 구현 클래스를 변경할 수 있음
 
 => 재실행해도 데이터가 남아있는 것을 확인할 수 있음
+```
 
 ***
 
