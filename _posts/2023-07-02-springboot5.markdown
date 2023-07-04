@@ -79,4 +79,437 @@ db 끄면 안됨! (다시 접속해야함)
 
 ### 순수 JDBC
 
+데이터 저장 기술의 발전
+
+build.gradle 파일에 jdbc, h2 db 관련 라이브러리 추가
+
+```java
+
+implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+runtimeOnly 'com.h2database:h2' 
+
+```
+
+application.properties 파일
+
+```java
+spring.datasource.url=jdbc:h2:tcp://localhost/~/test
+
+spring.datasource.driver-class-name=org.h2.Driver
+
+```
+
+추가
+
+repository - JdbcMemberRepository 추가
+
+(복붙)
+
+```java
+
+package hello.hellospring.repository;
+import hello.hellospring.domain.Member;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import javax.sql.DataSource;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+public class JdbcMemberRepository implements MemberRepository {
+    private final DataSource dataSource;
+    public JdbcMemberRepository(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    @Override
+    public Member save(Member member) {
+        String sql = "insert into member(name) values(?)";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, member.getName());
+            pstmt.executeUpdate();
+            rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                member.setId(rs.getLong(1));
+            } else {
+                throw new SQLException("id 조회 실패");
+            }
+            return member;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
+    @Override
+    public Optional<Member> findById(Long id) {
+        String sql = "select * from member where id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, id);
+            rs = pstmt.executeQuery();
+            if(rs.next()) {
+                Member member = new Member();
+                member.setId(rs.getLong("id"));
+                member.setName(rs.getString("name"));
+                return Optional.of(member);
+            } else {
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        } }
+    @Override
+    public List<Member> findAll() {
+        String sql = "select * from member";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            List<Member> members = new ArrayList<>();
+            while(rs.next()) {
+                Member member = new Member();
+                member.setId(rs.getLong("id"));
+                member.setName(rs.getString("name"));
+                members.add(member);
+            }
+            return members;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
+    @Override
+    public Optional<Member> findByName(String name) {
+        String sql = "select * from member where name = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, name);
+            rs = pstmt.executeQuery();
+            if(rs.next()) {
+                Member member = new Member();
+                member.setId(rs.getLong("id"));
+                member.setName(rs.getString("name"));
+                return Optional.of(member);
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
+    private Connection getConnection() {
+        return DataSourceUtils.getConnection(dataSource);
+    }
+    private void close(Connection conn, PreparedStatement pstmt, ResultSet rs)
+    {
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } try {
+        if (pstmt != null) {
+            pstmt.close();
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+        try {
+            if (conn != null) {
+                close(conn);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } }
+    private void close(Connection conn) throws SQLException {
+        DataSourceUtils.releaseConnection(conn, dataSource);
+    }
+}
+
+```
+
+SpringConfig
+
+```java
+@Bean
+    public MemberRepository memberRepository(){
+//        return new MemoryMemberRepository();
+        return new JdbcMemberRepository();
+    }
+```
+
+수정
+
+```java
+private DataSource dataSource;
+
+    @Autowired
+    public SpringConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+```
+
+memberRepository()에 dataSource 추가
+
+```java
+return new JdbcMemberRepository(dataSource);
+```
+
+실행
+
+⚠️ Whitelabel Error 오류 발생
+
+회원 목록 -> 에러
+
+application.properties 
+```java
+spring.datasource.username=sa 
+```    
+추가 -> 해결!
+
+📌 확인
+
+스프링부트 2.4 이후로 추가 필수
+
+원래는 (기존)
+
+MemberService는 MemberRepository를 의존하고 있음
+
+MemberRepository는 MemoryMemberRepository와 JdbcMemberRepository가 있음
+
+스프링 컨테이너에서는
+memory를 지우고 jdbc 로 연결을 바꿈
+
+-> **개방폐쇄 원칙** (OCP, Open-Closed Principle)
+- 확장에는 열려있고, 수정.변경에는 닫혀있음
+
+-> 스프링의 DI(Dependencies Injection)을 사용하면 기존 코드를 손대지 않고, 설정만으로 구현 클래스를 변경할 수 있음
+
+=> 재실행해도 데이터가 남아있는 것을 확인할 수 있음
+
+***
+
+### 스프링 통합 테스트
+
+test - service - MemberServiceTest 복사
+
+MemberServiceIntegrationTest 생성
+
+```java
+@SpringBootTest
+@Transactional
+```
+Spring 컨테이너한테 memoryMemberRepository 내놔 해야함.  
+```java
+@BeforeEach
+    public void beforeEach(){
+        memberRepository = new MemoryMemberRepository();
+        memberService = new MemberService(memberRepository);
+    }
+
+
+    @AfterEach
+    public void afterEach(){
+        memberRepository.clearStore();
+    }
+```
+지우기
+
+```java
+@Autowired MemberService memberService;
+@Autowired MemberRepository memberRepository;
+```
+
+추가
+
+회원가입 실행 (잠시 Transactional 주석처리)
+
+-> db에 hello 들어감
+
+다시 실행 -> 오류 ! (당연함 이미 db에 hello를 넣어둠)
+
+```java
+📎 @Transactional
+```
+을 달면 test를 실행할 때 transaction을 실행하고 db의 데이터를 insert quary에 넣은 후 test가 끝나면 롤백을 해줌! 깨끗하게 지워짐
+
+delete from member;
+
+db를 모두 지우고 다시 실행 (Transactional 주석 풀어줌)
+
+-> 실행 O -> 다시 실행 O (db에 값 없음. 롤백하여 다 지워줌 -> 다음 테스트 중복 다시 가능)
+
+📌 확인
+
+```
+📎 @SpringBootTest : 스프링 컨테이너와 테스트를 함께 실행한다.
+📎 @Transactional : 테스트 케이스에 이 애노테이션이 있으면, 테스트 시작 전에 트랜잭션을 시작하고, 테스트 완료 후에 항상 롤백한다. 이렇게 하면 DB에 데이터가 남지 않으므로 다음 테스트에 영향을 주지 않는다.
+```
+
+***
+
+### 스프링 JdbcTemplate
+
+- MyBatis와 비슷한 라이브러리
+
+- 같은 라이브러리는 JDBC API에서 본 반복 코드를 대부분 제거
+
+- 하지만 SQL은 직접 작성
+
+repository - JdbcTemplateMemberRepository 생성
+
+```java
+package hello.hellospring.repository;
+
+import hello.hellospring.domain.Member;
+
+import java.util.List;
+import java.util.Optional;
+
+public class JdbcTemplateMemberRepository implements MemberRepository{
+    @Override
+    public Member save(Member member) {
+        return null;
+    }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Member> findByName(String name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return null;
+    }
+}
+```
+다음 추가
+
+```java
+private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public JdbcTemplateMemberRepository(DataSource dataSource) {
+        jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+```
+
+생성자가 딱 하나일 때 @Autowired 생략 가능
+
+```java
+private RowMapper<Member> memberRowMapper(){
+        return new RowMapper<Member>() {
+            @Override
+            public Member mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                Member member = new Member();
+                member.setId(rs.getLong("id"));
+                member.setName(rs.getString("name"));
+                return member;
+            }
+        };
+    }
+```
+lambda로 고치기
+
+```java
+private RowMapper<Member> memberRowMapper(){
+        return (rs, rowNum) -> {
+
+            Member member = new Member();
+            member.setId(rs.getLong("id"));
+            member.setName(rs.getString("name"));
+            return member;
+        };
+    }
+```
+
+findById 수정
+
+```java
+@Override
+    public Optional<Member> findById(Long id) {
+        List<Member> result = jdbcTemplate.query("select * from member where id = ?", memberRowMapper(), id);
+        return result.stream().findAny();
+    }
+```
+
+(이해 못함)
+
+앞에서 사용한 jdbc를 잘 정리하여 줄인 것이 이 템플릿
+
+```java
+@Override
+    public Member save(Member member) {
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        jdbcInsert.withTableName("member").usingGeneratedKeyColumns("id");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", member.getName());
+        Number key = jdbcInsert.executeAndReturnKey(new
+                MapSqlParameterSource(parameters));
+        member.setId(key.longValue());
+        return member;
+    }
+```
+(복붙)
+
+findByName 은 findById에서 id -> name 교체
+
+```java
+@Override
+    public Optional<Member> findByName(String name) {
+        List<Member> result = jdbcTemplate.query("select * from member where name = ?", memberRowMapper(), name);
+        return result.stream().findAny();
+    }
+```
+
+findAll
+
+```java
+return jdbcTemplate.query("select * from member", memberRowMapper());
+```
+추가
+
+SpringConfig
+
+```java
+//return new JdbcMemberRepository(dataSource); 
+return new JdbcTemplateMemberRepository(dataSource);
+``` 
+JdbcMemberRepository 주석 후 JdbcTemplateMemberRepository 반환
+
+실행 -> 성공!
+
+📌 확인
 
