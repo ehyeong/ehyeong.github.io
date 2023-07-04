@@ -65,12 +65,13 @@ insert into member(name) values('spring') 실행
 select * from member; 확인 
 
 ID | NAME
-
 1 | spring
 
 insert into member(name) values('spring2') -> 
 
-2 | spring2 추가
+2 | spring2 
+
+추가
 
 db 끄면 안됨! (다시 접속해야함)
 
