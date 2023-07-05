@@ -517,3 +517,243 @@ JdbcMemberRepository 주석 후 JdbcTemplateMemberRepository 반환
 
 📌 확인
 
+***
+
+### JPA
+
+(강의 *자바 ORM 표준 JPA 프로그래밍 - 기본편*)
+
+- JPA는 기존의 반복 코드는 물론이고, 기본적인 SQL도 JPA가 직접 만들어서 실행해준다.
+- JPA를 사용하면, SQL과 데이터 중심의 설계에서 객체 중심의 설계로 패러다임을 전환을 할 수 있다. 
+- JPA를 사용하면 개발 생산성을 크게 높일 수 있다.
+
+build.gradle
+
+```java
+//	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.13'
+```
+application.properties
+
+```java
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=none
+```
+추가
+
+domain - Member
+
+@Entity 
+
+@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+추가
+
+identity -> id값은 알아서 지정해줌
+
+```java
+@Entity
+public class Member {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    ...
+}
+```
+
+repository - JpaMemberRepository 생성
+
+```java
+package hello.hellospring.repository;
+
+import hello.hellospring.domain.Member;
+import jakarta.persistence.EntityManager;
+
+import java.util.List;
+import java.util.Optional;
+
+public class JpaMemberRepository implements MemberRepository{
+
+
+    @Override
+    public Member save(Member member) {
+        return null;
+    }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Member> findByName(String name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return null;
+    }
+}
+```
+option + Enter
+
+```java
+    private final EntityManager em;
+
+    public JpaMemberRepository(EntityManager em) {
+        this.em = em;
+    }
+```
+추가
+
+jpa를 쓰기 위해선 EntityManager를 주입 받아야함.
+
+save 수정
+
+```java
+@Override
+    public Member save(Member member) {
+        em.persist(member);
+        return member;
+    }
+```
+
+id까지 member에서 다해줌
+
+findById 수정
+
+```java
+@Override
+    public Optional<Member> findById(Long id) {
+        Member member = em.find(Member.class, id);
+        return Optional.ofNullable(member);
+    }
+```
+findAll 수정
+
+```java
+@Override
+    public List<Member> findAll() {
+        em.createQuery("select m from Member m", Member.class)
+                .getResultList();
+    }
+```
+option + Enter , result 로 수정 ->
+
+```java
+@Override
+    public List<Member> findAll() {
+        List<Member> result = em.createQuery("select m from Member m", Member.class)
+                .getResultList();
+        return result;
+    }
+```
+inline으로 다시 수정 (왜 이렇게 하는지 모르겠음)
+
+```java
+return em.createQuery("select m from Member m", Member.class)
+                .getResultList();
+```
+
+select m -> 객체 자체 m을 select 함
+
+findByName
+```java
+@Override
+    public Optional<Member> findByName(String name) {
+        List<Member> result = em.createQuery("select m from Member m where m.name = :name", Member.class)
+                .setParameter("name", name)
+                .getResultList();
+
+        return result.stream().findAny();
+    }
+```
+전체
+```java
+package hello.hellospring.repository;
+
+import hello.hellospring.domain.Member;
+import jakarta.persistence.EntityManager;
+
+import java.util.List;
+import java.util.Optional;
+
+public class JpaMemberRepository implements MemberRepository{
+
+    private final EntityManager em;
+
+    public JpaMemberRepository(EntityManager em) {
+        this.em = em;
+    }
+
+    @Override
+    public Member save(Member member) {
+        em.persist(member);
+        return member;
+    }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        Member member = em.find(Member.class, id);
+        return Optional.ofNullable(member);
+    }
+
+    @Override
+    public Optional<Member> findByName(String name) {
+        List<Member> result = em.createQuery("select m from Member m where m.name = :name", Member.class)
+                .setParameter("name", name)
+                .getResultList();
+
+        return result.stream().findAny();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return em.createQuery("select m from Member m", Member.class)
+                .getResultList();
+    }
+}
+```
+
+jpa를 쓰기 위해선 @Transational이 있어야함
+-> 데이터 저장, 변경
+
+MemberService 에 @Transactional 추가
+
+service - SpringConfig
+
+```java
+  @Autowired
+    public SpringConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+```
+삭제
+
+```java
+private EntityManager em;
+
+    @Autowired
+    public SpringConfig(EntityManager em) {
+        this.em = em;
+    }
+```
+추가
+
+memberRepository 수정
+
+```java
+//        return new JdbcTemplateMemberRepository(dataSource);
+        return new JpaMemberRepository(em);
+```
+
+실행 -> ⚠️ 에러 
+
+해결 (이것저것 다 해서 어디서 고쳐졌는지 모르겠음)
+
+@Commit 을 넣고 MemberServiceIntegrationTest 실행 -> spring 들어가는 것 확인할 수 있음
+
+📌 확인
