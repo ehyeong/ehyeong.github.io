@@ -757,3 +757,51 @@ memberRepository 수정
 @Commit 을 넣고 MemberServiceIntegrationTest 실행 -> spring 들어가는 것 확인할 수 있음
 
 📌 확인
+
+***
+
+### 스프링 데이터 JPA
+
+repository - SpringDataJpaMemberRepository 인터페이스 생성
+
+```java
+package hello.hellospring.repository;
+
+import hello.hellospring.domain.Member;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface SpringDataJpaMemberRepository extends JpaRepository<Member,Long>, MemberRepository {
+
+    @Override
+    Optional<Member> findByName(String name);
+}
+```
+service - SpringConfig
+
+```java
+/*
+    private final DataSource dataSource;
+    private final EntityManager em;
+    public SpringConfig(DataSource dataSource, EntityManager em) {
+        this.dataSource = dataSource;
+        this.em = em;
+    }
+
+ */
+```
+주석처리
+
+memberRepository()도 주석처리
+
+```java
+private final MemberRepository memberRepository;
+
+@Autowired
+public SpringConfig(MemberRepository memberRepository) {
+    this.memberRepository = memberRepository;
+    }
+```
+생성
+
