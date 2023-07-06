@@ -805,3 +805,18 @@ public SpringConfig(MemberRepository memberRepository) {
 ```
 생성
 
+실행 -> 성공
+
+📌 확인
+
+스프링 데이터 JPA 가 SpringDataJpaMemberRepository를 스프링 빈으로 자동 등록
+
+JpaRepository를 들어가보면 기본 메소드를 다 제공해줌 (crud) *공통* -> 가져와 쓰면 됨
+
+공통이 불가능한 것 -> findByName 인터페이스로
+
+**스프링 데이터 JPA 제공 기능** 
+- 인터페이스를 통한 기본적인 CRUD
+findByName() 
+- findByEmail() 처럼 메서드 이름 만으로 조회 기능 제공 
+- 페이징 기능 자동 제공
