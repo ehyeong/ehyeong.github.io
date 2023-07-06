@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Spring Boot Inflearn 05"
+title:  "Spring Introduction Inflearn 05"
 excerpt: "스프링 DB 접근 기술"
 date:   2023-07-02 21:30:36 +0530
 categories: SpringBoot

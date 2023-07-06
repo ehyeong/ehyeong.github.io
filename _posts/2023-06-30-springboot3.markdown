@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Spring Boot Inflearn 03"
+title:  "Spring Introduction Inflearn 03"
 excerpt: "스프링 빈과 의존관계"
 date:   2023-06-30 23:05:36 +0530
 categories: SpringBoot

@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Spring Boot Inflearn 06"
+title:  "Spring Introduction Inflearn 06"
 excerpt: "AOP"
 date:   2023-07-04 21:30:36 +0530
 categories: SpringBoot

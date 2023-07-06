@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Spring Boot Inflearn 02"
+title:  "Spring Introduction Inflearn 02"
 excerpt: "회원 관리 예제 - 백엔드 개발"
 date:   2023-06-30 23:04:36 +0530
 categories: SpringBoot

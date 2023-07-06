@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Spring Boot Inflearn 04"
+title:  "Spring Introduction Inflearn 04"
 excerpt: "회원 관리 예제 - 웹 MVC 개발"
 date:   2023-07-01 21:30:36 +0530
 categories: SpringBoot
