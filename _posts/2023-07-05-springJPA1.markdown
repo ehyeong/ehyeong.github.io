@@ -1,0 +1,246 @@
+---
+layout: post
+title:  "Java ORM 표준 JPA Inflearn 01"
+excerpt: "JPA 소개, JPA 시작하기"
+date:   2023-07-05 21:30:36 +0530
+categories: SpringBoot
+---
+
+### JPA 소개
+
+### SQL 중심적인 개발의 문제점
+
+**객체를 관계형 DB에 관리**
+
+**SQL**
+
+객체 상속 관계 -> DB에 상속 관계 저장할 수 없음
+
+부모 같은 테이블을 만드는 것 ! (슈퍼타입/서브타입 관계)
+
+객체는 **참조**를 사용
+
+테이블은 **외래 키**를 사용 (조인)
+
+...
+
+계층형 아키테처
+
+진정한 의미의 계층 분할이 어렵다.
+
+***
+
+### JPA 
+
+JPA (Java Persistence API)
+
+ORM (Object-relational mapping)
+
+JPA는 표준 명세
+
+- JPA는 인터페이스 모음
+- 3가지 구현체 (Hibernate, EclipseLink, DataNucleus)
+
+생산성 CRUD
+
+- 저장: jpa.persist(member)
+- 조회: Member member = jpa.find(memberId)
+- 수정: member.setName("변경할 이름")
+- 삭제: jpa.remove(member)
+
+JPA의 성능 최적화 기능
+
+1. 1차 캐시와 동일성 보장
+2. 츠랜잭션을 지원하는 쓰기 지연
+3. 지연 로딩
+
+***
+
+### Hello JPA - 프로젝트 생성, 애플리케이션 개발
+
+META-INF - persistence.xml 생성
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+    <persistence-unit name="hello">
+        <properties>
+            <!-- 필수 속성 -->
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/test"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <!-- 옵션 -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.use_sql_comments" value="true"/>
+            <!--<property name="hibernate.hbm2ddl.auto" value="create" />-->
+        </properties>
+    </persistence-unit>
+</persistence>
+```
+
+java - hellojpa 패키지 생성
+
+hellojpa - JpaMain 클래스 생성
+
+```java
+package hellojpa;
+
+import javax.persistence.*;
+
+public class JpaMain {
+    public static void main(String[] args) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+
+        EntityManager em = emf.createEntityManager();
+
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+
+        Member member = new Member();
+
+        member.setId(1L);
+        member.setName("HelloA");
+        em.persist(member);
+
+        tx.commit();
+        em.close();
+        emf.close();
+    }
+}
+```
+
+hellojpa - Member 클래스 생성
+
+```java
+package hellojpa;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Member {
+    @Id
+    private Long id;
+    private String name;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+```
+
+오류 나서 프로젝트 다시 생성하여 새로시작
+
+반복 (강의 내용 똑같이 따라함)
+
+⚠️오류 
+
+pom.xml 에
+
+```xml
+<dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+</dependency>
+```
+추가 (java 11버전 이상부터는 추가해야됨)
+
+-> 해결
+
+콘솔창에
+Hibernate: 
+    /* insert hellojpa.Member
+        */ insert 
+        into
+            Member
+            (name, id) 
+        values
+            (?, ?)             
+뜸!
+
+테이블에도 helloA 생성되는 것 확인할 수 있음
+
+```java
+try {
+            Member findMember = em.find(Member.class, 1L);
+            //findMember.setName("HelloJPA");
+            //System.out.println("findMember.id =" + findMember.getId());
+            //System.out.println("findMember.name =" + findMember.getName());
+            //Member member = new Member();
+
+            //member.setId(1L);
+            //member.setName("HelloA");
+            //em.persist(member);
+
+            tx.commit();
+        } catch (Exception e){
+            tx.rollback();
+        }finally {
+            em.close();
+        }
+```
+
+추가
+
+persistence.xml 파일
+```xml
+<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle12cDialect"/>
+```
+변경
+
+JpaMain try 내부
+```java
+List<Member> result = em.createQuery("select m from Member as m",Member.class)
+                    .setFirstResult(5)
+                    .setMaxResults(8)
+                    .getResultList();
+
+            for (Member member : result){
+                System.out.println("member.name= " + member.getName());
+            }
+            tx.commit();
+```
+
+**JPQL**
+
+- JPA를 사용하면 엔티티 객체를 중심으로 개발 
+- 문제는 검색 쿼리
+- 검색을 할 때도 테이블이 아닌 엔티티 객체를 대상으로 검색 모든 DB 데이터를 객체로 변환해서 검색하는 것은 불가능
+- 애플리케이션이 필요한 데이터만 DB에서 불러오려면 결국 검 색 조건이 포함된 SQL이 필요
+
+- 테이블이 아닌 객체를 대상으로 검색하는 객체 지향 쿼리  
+- SQL을 추상화해서 특정 데이터베이스 SQL에 의존X
+- JPQL을 한마디로 정의하면 객체 지향 SQL JPQL은 뒤에서 아주 자세히 다룸
+
+=> 객체지향 SQL이다
+
+```
+**정리**
+- h2 데이터베이스 띄우기, 실행
+- 라이브러리 세팅
+- persistence.xml
+- EntityManagerFactory를 만들어야함 - 데이터베이스 하나당 묶여서 
+- hello가 설정 정보 읽어서 만듬
+- EntityManager가 고객의 요청이 올때마다 dp작업을 해야함
+- jpa의 모든 데이터 변경은 transaction에서 일어나야함
+- commit을 꼭 해줘야함 (안하면 값이 변하지 않음)
+- 자원을 다 쓰면 닫아줘야함 em.close(), emf.close()
+```
